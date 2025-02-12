@@ -1,101 +1,151 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/Card";
+import { CardContent } from "@/components/ui/CardContent";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { CleaveInput } from "@/components/ui/CleaveInput";
+
+interface Produto {
+  id: number;
+  nome: string;
+  descricao: string;
+  preco: string; // Preço atualizado obtido do endpoint de edição
+}
+
+export default function PaymentForm() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    phone: "",
+    cpf: "",
+    produtosSelecionados: {} as Record<number, number>, // ID do produto => quantidade
+  });
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      try {
+        const response = await fetch("/api/produtos");
+        const data = await response.json();
+        setProdutos(data);
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+      }
+    };
+    fetchProdutos();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleQuantityChange = (produtoId: number, delta: number) => {
+    setFormData((prev) => {
+      const novaQuantidade = Math.max(0, (prev.produtosSelecionados[produtoId] || 0) + delta);
+      return {
+        ...prev,
+        produtosSelecionados: { ...prev.produtosSelecionados, [produtoId]: novaQuantidade },
+      };
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    const totalAmount = Object.entries(formData.produtosSelecionados)
+      .filter(([, qtd]) => qtd > 0)
+      .reduce((acc, [produtoId, qtd]) => {
+        const produto = produtos.find((p: { id: number; preco: string }) => p.id === Number(produtoId));
+        return acc + (produto ? parseFloat(produto.preco) * (qtd as number) : 0);
+      }, 0);
+  
+    try {
+      const response = await fetch("/api/pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalAmount,
+          customerName: formData.name,
+          customerCpf: formData.cpf.replace(/\D/g, ""), // Remove caracteres não numéricos do CPF
+          produtos: Object.entries(formData.produtosSelecionados)
+            .filter(([, qtd]) => qtd > 0)
+            .map(([produtoId, qtd]) => ({
+              produtoId: Number(produtoId),
+              quantidade: qtd as number,
+            })),
+        }),
+      });
+  
+      const data: { qrCode: string; copyPasteCode: string; pedidoId: number } = await response.json();
+      if (data.qrCode) {
+        router.push(`/pix?pedidoId=${data.pedidoId}&copyPasteCode=${encodeURIComponent(data.copyPasteCode)}&qrCode=${encodeURIComponent(data.qrCode)}`);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Erro ao gerar QR Code Pix:", error.message);
+      } else {
+        console.error("Erro desconhecido ao gerar QR Code Pix");
+      }
+    }
+  };
+  
+  
+  
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className="flex items-center justify-center min-h-screen bg-red-800 p-4">
+      <Card className="w-full max-w-md bg-red-700 text-white p-4">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-4 text-center">MINAS CAP | SELECIONE SEUS PRODUTOS</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input name="name" placeholder="Nome" value={formData.name} onChange={handleChange} required />
+            <Input name="surname" placeholder="Sobrenome" value={formData.surname} onChange={handleChange} required />
+            <CleaveInput
+              options={{ phone: true, phoneRegionCode: "BR" }}
+              name="phone"
+              placeholder="Telefone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <CleaveInput
+              options={{ blocks: [3, 3, 3, 2], delimiters: [".", ".", "-"], numericOnly: true }}
+              name="cpf"
+              placeholder="CPF"
+              value={formData.cpf}
+              onChange={handleChange}
+              required
+            />
+
+            {/* Renderiza os produtos dinamicamente */}
+            <div className="space-y-4">
+              {produtos.map((produto) => (
+                <Card key={produto.id} className="p-4 flex justify-between items-center bg-red-600">
+                  <div>
+                    <span className="block font-bold">{produto.nome}</span>
+                    <span className="text-sm">{produto.descricao}</span>
+                    <span className="text-lg font-bold block mt-1">R$ {produto.preco}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Button onClick={() => handleQuantityChange(produto.id, -1)} className="px-2">-</Button>
+                    <span className="mx-2">{formData.produtosSelecionados[produto.id] || 0}</span>
+                    <Button onClick={() => handleQuantityChange(produto.id, 1)} className="px-2">+</Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-red-900">
+              Gerar QR Code
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
