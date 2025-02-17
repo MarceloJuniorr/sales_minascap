@@ -2,6 +2,7 @@
   "name": "my-pix-project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^6.3.1",
     "cleave.js": "^1.6.0",
+    "lucide-react": "^0.475.0",
     "next": "15.1.6",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",

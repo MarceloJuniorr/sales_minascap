@@ -1,27 +1,28 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import EfiPay from "sdk-node-apis-efi";
-import path from "path";
-
-const efipay = new EfiPay({
-  sandbox: true,
-  client_id: process.env.EFI_CLIENT_ID!,
-  client_secret: process.env.EFI_CLIENT_SECRET!,
-  certificate: path.resolve(process.cwd(), process.env.EFI_CERTIFICATE_PATH!),
-});
+import options from "@/lib/credentials"
+const efipay = new EfiPay(options);
 
 export async function POST(req: Request) {
   try {
-    const { amount, customerName, customerCpf, produtos } = await req.json();
+    const { amount, customerName, customerCpf, produtos,telefone } = await req.json();
     const cpfLimpo = customerCpf.replace(/\D/g, "");
-
+    const telefoneLimpo = telefone.replace(/\D/g, "");
+    console.log('Iniciando verificacao do cliente');
+    
     // 1️⃣ Verifica se o cliente já existe
     let cliente = await prisma.cliente.findUnique({ where: { cpf: cpfLimpo } });
+
+    
     if (!cliente) {
       cliente = await prisma.cliente.create({
-        data: { nome: customerName, cpf: cpfLimpo },
+        data: { nome: customerName, cpf: cpfLimpo, telefone: telefoneLimpo },
       });
     }
+
+    console.log(cliente);
+
 
     // 2️⃣ Cria o pedido
     const pedido = await prisma.pedido.create({
@@ -32,11 +33,15 @@ export async function POST(req: Request) {
       },
     });
 
+    console.log(pedido);
+    
+
     // 3️⃣ Adiciona os produtos ao pedido
     for (const { produtoId, quantidade } of produtos) {
-      await prisma.pedidoProduto.create({
+      const newProduto= await prisma.pedidoProduto.create({
         data: { pedidoId: pedido.id, produtoId, quantidade },
       });
+      console.log(newProduto)
     }
 
     // 4️⃣ Criar cobrança Pix via Efi Bank
@@ -49,10 +54,14 @@ export async function POST(req: Request) {
     };
 
     const charge = await efipay.pixCreateImmediateCharge({}, chargeInput);
-    const { loc } = charge;
+    console.log(charge);
+    
+    const { loc, txid } = charge;
 
     // 5️⃣ Gerar QR Code
     const qrcode = await efipay.pixGenerateQRCode({ id: loc.id });
+    console.log(qrcode);
+    
 
     // 6️⃣ Salvar cobrança no banco
     await prisma.cobranca.create({
@@ -61,15 +70,18 @@ export async function POST(req: Request) {
         pixQrCode: qrcode.imagemQrcode,
         pixCopiaCola: qrcode.qrcode,
         pixId: loc.id.toString(),
+        txid: txid
       },
     });
 
     return NextResponse.json({
+      pedidoId:pedido.id,
       qrCode: qrcode.imagemQrcode,
       copyPasteCode: qrcode.qrcode,
+      pixId: loc.id, // Passando o Pix ID
     });
   } catch (error) {
-    console.error("Erro ao criar cobrança Pix:", error);
+    console.error("Erro ao carregar dados:", error instanceof Error ? error.message : error);
     return NextResponse.json({ error: "Erro ao criar cobrança Pix" }, { status: 500 });
   }
 }

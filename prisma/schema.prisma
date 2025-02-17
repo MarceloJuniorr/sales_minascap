@@ -11,66 +11,70 @@ model Cliente {
   id        Int      @id @default(autoincrement())
   nome      String
   cpf       String   @unique
-  telefone  String?
+  telefone  String   
   createdAt DateTime @default(now())
 
   pedidos Pedido[]
 }
 
 model Pedido {
-  id         Int      @id @default(autoincrement())
-  cliente    Cliente  @relation(fields: [clienteId], references: [id])
-  clienteId  Int
-  total      Decimal  @map("total")
-  status     Int      @default(0) // 0 = Pendente, 1 = Confirmado, 2 = Erro
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId Int
+  total     Decimal  @map("total")
+  status    Int      @default(0) // 0 = Pendente, 1 = Confirmado, 2 = Erro
+  createdAt DateTime @default(now())
 
   itensPedido PedidoProduto[]
-  cobranca   Cobranca?
+  cobranca    Cobranca?
   integracoes Integracao[]
 }
 
 model Produto {
-  id          Int    @id @default(autoincrement())
-  nome        String @unique
-  descricao   String?
+  id            Int      @id @default(autoincrement())
+  nome          String   @unique
+  descricao     String?
   urlIntegracao String
-  createdAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
 
   itensPedido PedidoProduto[]
   integracoes Integracao[]
 }
 
 model PedidoProduto {
-  id         Int    @id @default(autoincrement())
-  pedido     Pedido @relation(fields: [pedidoId], references: [id])
+  id         Int     @id @default(autoincrement())
+  pedido     Pedido  @relation(fields: [pedidoId], references: [id])
   pedidoId   Int
   produto    Produto @relation(fields: [produtoId], references: [id])
   produtoId  Int
-  quantidade Int    @default(1)
+  quantidade Int     @default(1)
 
-  createdAt  DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
-
-
 model Cobranca {
-  id         Int      @id @default(autoincrement())
-  pedido     Pedido   @relation(fields: [pedidoId], references: [id])
-  pedidoId   Int      @unique
-  pixQrCode  String
+  id           Int      @id @default(autoincrement())
+  pedido       Pedido   @relation(fields: [pedidoId], references: [id])
+  pedidoId     Int      @unique
+  pixQrCode    String   @db.Text
   pixCopiaCola String
-  pixId      String   @unique
-  status     Int      @default(0) // 0 = Pendente, 1 = Confirmado, 2 = Erro
-  createdAt  DateTime @default(now())
+  pixId        String   @unique
+  txid         String   @unique
+  status       Int      @default(0) // 0 = Pendente, 1 = Confirmado, 2 = Erro
+  createdAt    DateTime @default(now())
 }
 
 model Integracao {
-  id         Int      @id @default(autoincrement())
-  pedido     Pedido   @relation(fields: [pedidoId], references: [id])
-  pedidoId   Int
-  produto    Produto  @relation(fields: [produtoId], references: [id])
-  produtoId  Int
-  status     Int      @default(0) // 0 = Pendente, 1 = Enviado, 2 = Erro
-  createdAt  DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  pedido        Pedido   @relation(fields: [pedidoId], references: [id])
+  pedidoId      Int
+  produto       Produto  @relation(fields: [produtoId], references: [id])
+  produtoId     Int
+  urlIntegracao String
+  amount        Int
+  name          String
+  phone         String
+  promoterid    String
+  status        Int      @default(0) // 0 = Pendente, 1 = Enviado, 2 = Erro
+  createdAt     DateTime @default(now())
 }

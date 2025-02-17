@@ -1,24 +1,26 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const [bolaoResponse, bolaoPremiumResponse] = await Promise.all([
-      fetch("https://daniel.reconize.com.br/api/editions/active"),
-      fetch("https://danielpremium.reconize.com.br/api/editions/active"),
-    ]);
+    const response = await fetch(process.env.EFI_API_EDITION_URL!);
+    const edicaoData = await response.json();    
 
-    const [bolaoData, bolaoPremiumData] = await Promise.all([
-      bolaoResponse.json(),
-      bolaoPremiumResponse.json(),
-    ]);
+    const baseUrl = new URL(req.url).origin; // Obtém dinamicamente a origem da requisição
+    const produtosResponse = await fetch(`${baseUrl}/api/produtos`);
+    const produtos = await produtosResponse.json();
+    console.log(produtos);
+    
+
 
     return NextResponse.json({
-      edition: bolaoData[0]?.edition || "N/A",
-      sorteio: bolaoData[0]?.sorteio || "Indisponível",
-      bolaoValue: bolaoData[0]?.value || 10,
-      bolaoPremiumValue: bolaoPremiumData[0]?.value || 90,
+      edition: edicaoData[0].edition,
+      sorteio: edicaoData[0].sorteio,
+      produtos,
     });
   } catch (error) {
-    return NextResponse.json({ error: "Erro ao buscar os dados das edições" }, { status: 500 });
+    console.error("Erro ao buscar edição e produtos:", error);
+    return NextResponse.json({ error: "Erro ao buscar edição e produtos" }, { status: 500 });
   }
 }
+
+

@@ -14,14 +14,22 @@ export async function GET() {
 
     // Buscar valores atualizados para cada produto
     const produtosComValores = await Promise.all(
-        produtos.map(async (item: { nome: string; value?: number }) => {
+        produtos.map(async (item: { nome: string; urlIntegracao: string; id: number}) => {
           try {
-            const response = await fetch(process.env.EFI_API_EDITION_URL!);
-            const edicaoData: { nome: string; value: number }[] = await response.json();
-      
+            const response = await fetch(item.urlIntegracao + '/api/editions/active');
+            
+            const edicaoData: { 
+              value: number; 
+              groupLimit: number; 
+              cardboardLimit: number}[] = await response.json();
+            
+            
             return {
-              ...item,
-              preco: edicaoData.find((produto) => produto.nome === item.nome)?.value || "N/A",
+              id: item.id,
+              nome: item.nome,
+              preco: edicaoData[0].value,
+              groupLimit: edicaoData[0].groupLimit,
+              cardboardLimit: edicaoData[0].cardboardLimit
             };
           } catch (error) {
             console.error(`Erro ao buscar edição para o produto ${item.nome}:`, error);

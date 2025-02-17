@@ -8,10 +8,31 @@ export default function PixPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pedidoId = searchParams.get("pedidoId");
-  const copyPasteCode = searchParams.get("copyPasteCode");
-  const qrCode = searchParams.get("qrCode");
-  const pixId = searchParams.get("pixId");
+  const [copyPasteCode, setCopyPasteCode] = useState<string | null>(null);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [pixId, setPixId] = useState<string | null>(null);
+  const [txid, setTxid] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!pedidoId) return;
+
+    const fetchPaymentData = async () => {
+      try {
+        const response = await fetch(`/api/get-cobranca?pedidoId=${pedidoId}`);
+        const data = await response.json();
+
+        setCopyPasteCode(data.copyPasteCode);
+        setQrCode(data.qrCode);
+        setPixId(data.pixId);
+        setTxid(data.txid);
+      } catch (error) {
+        console.error("Erro ao buscar dados da cobrança:", error);
+      }
+    };
+
+    fetchPaymentData();
+  }, [pedidoId]);
 
   useEffect(() => {
     if (!pixId) return;
@@ -22,7 +43,7 @@ export default function PixPage() {
         const data = await response.json();
 
         if (data.status === 1) {
-          router.push("/sucesso"); // Redireciona para a tela de sucesso
+          router.push("/sucess"); // Redireciona para a tela de sucesso
         } else {
           setStatus(data.status);
         }
