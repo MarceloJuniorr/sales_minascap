@@ -12,10 +12,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Minas Cap Bolão",
-  description: "Site oficial do Bolão Minas Cap",
-};
+export const metadata: Metadata= {
+  title: "Bolão Minas Cap",
+  description: "Compre seu bolão de forma online e segura!",
+  openGraph: {
+    title: "Bolão Minas Cap",
+    description: "Compre seu bolão de forma online e segura!",
+    url: "https://minascap.shop",
+    siteName: "Bolão Minas Cap",
+    images: [
+      {
+        url: "https://app.minascap.com/assets/icon/icon-512x512.png", // Caminho da imagem
+        width: 512,
+        height: 512,
+        alt: "Bolão Minas Cap - Pagamento Pix",
+      },
+    ],
+    type: "website",
+  },
+};;
 
 export default function RootLayout({
   children,
