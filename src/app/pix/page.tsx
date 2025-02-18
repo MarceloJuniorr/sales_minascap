@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function PixPage() {
+function PixPageContent(){
   const searchParams = useSearchParams();
   const router = useRouter();
   const pedidoId = searchParams.get("pedidoId");
@@ -74,22 +74,30 @@ export default function PixPage() {
           </div>
         )}
 
-<p className="text-center mt-4 flex items-center justify-center">
-  Status: {status === 0 ? (
-    "Pendente"
-  ) : status === 1 ? (
-    "Confirmado"
-  ) : status === 2 ? (
-    "Erro no pagamento"
-  ) : (
-    <svg className="animate-spin h-5 w-5 ml-2 text-white" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-    </svg>
-  )}
-</p>
+        <p className="text-center mt-4 flex items-center justify-center">
+          Status: {status === 0 ? (
+            "Pendente"
+          ) : status === 1 ? (
+            "Confirmado"
+          ) : status === 2 ? (
+            "Erro no pagamento"
+          ) : (
+            <svg className="animate-spin h-5 w-5 ml-2 text-white" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+          )}
+        </p>
 
       </div>
     </div>
+  );
+}
+
+export default function PixPage() {
+  return (
+    <Suspense fallback={<p className="text-center">Carregando...</p>}>
+      <PixPageContent />
+    </Suspense>
   );
 }
