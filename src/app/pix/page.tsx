@@ -11,7 +11,6 @@ export default function PixPage() {
   const [copyPasteCode, setCopyPasteCode] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [pixId, setPixId] = useState<string | null>(null);
-  const [txid, setTxid] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export default function PixPage() {
         setCopyPasteCode(data.copyPasteCode);
         setQrCode(data.qrCode);
         setPixId(data.pixId);
-        setTxid(data.txid);
       } catch (error) {
         console.error("Erro ao buscar dados da cobrança:", error);
       }
@@ -76,9 +74,21 @@ export default function PixPage() {
           </div>
         )}
 
-        <p className="text-center mt-4">
-          Status: {status === 0 ? "Pendente" : status === 1 ? "Confirmado" : status === 2 ? "Erro no pagamento" : "Verificando..."}
-        </p>
+<p className="text-center mt-4 flex items-center justify-center">
+  Status: {status === 0 ? (
+    "Pendente"
+  ) : status === 1 ? (
+    "Confirmado"
+  ) : status === 2 ? (
+    "Erro no pagamento"
+  ) : (
+    <svg className="animate-spin h-5 w-5 ml-2 text-white" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+    </svg>
+  )}
+</p>
+
       </div>
     </div>
   );

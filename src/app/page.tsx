@@ -29,6 +29,8 @@ export default function PaymentForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [edicao, setEdicao] = useState<string | null>(null);
   const [dataSorteio, setDataSorteio] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,6 +86,10 @@ export default function PaymentForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isProcessing) return; // Impede múltiplos cliques
+
+    setIsProcessing(true); // Ativa o estado de carregamento
+
     try {
       const dataPix = JSON.stringify({
         amount: totalAmount,
@@ -110,6 +116,8 @@ export default function PaymentForm() {
       }
     } catch (error) {
       console.error("Erro ao gerar QR Code Pix:", error);
+    } finally {
+      setIsProcessing(false); // Libera o botão após a requisição
     }
   };
 
@@ -163,7 +171,7 @@ export default function PaymentForm() {
                     <div className="flex items-center">
                       <Button type="button" onClick={() => handleQuantityChange(produto.id, -1)} className="p-2 rounded-full bg-yellow-700 hover:bg-yellow-600 font-bold">
                         -
-                      </Button>                    
+                      </Button>
                       <span className="mx-2">{formData.produtosSelecionados[produto.id] || 0}</span>
                       <Button type="button" onClick={() => handleQuantityChange(produto.id, 1)} className="p-2 rounded-full bg-yellow-700 hover:bg-yellow-600 font-bold">
                         +
@@ -178,8 +186,19 @@ export default function PaymentForm() {
                 Total: R$ {totalAmount.toFixed(2)}
               </div>
 
-              <Button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-red-900">
-                Pagar com PIX
+              <Button
+                type="submit"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-red-900 flex items-center justify-center"
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                ) : (
+                  "Pagar com PIX"
+                )}
               </Button>
             </form>
           )}
