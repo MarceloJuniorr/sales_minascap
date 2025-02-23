@@ -28,7 +28,7 @@ CREATE TABLE `Pedido` (
 CREATE TABLE `Cobranca` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `pedidoId` INTEGER NOT NULL,
-    `pixQrCode` TEXT NOT NULL,
+    `pixQrCode` VARCHAR(191) NOT NULL,
     `pixCopiaCola` VARCHAR(191) NOT NULL,
     `pixId` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'pendente',

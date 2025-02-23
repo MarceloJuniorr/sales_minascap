@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Cleave from 'cleave.js/react';
 import 'cleave.js/dist/addons/cleave-phone.i18n.js'; // Adicione esta linha

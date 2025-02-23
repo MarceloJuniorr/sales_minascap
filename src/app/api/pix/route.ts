@@ -6,7 +6,7 @@ const efipay = new EfiPay(options);
 
 export async function POST(req: Request) {
   try {
-    const { amount, customerName, customerCpf, produtos,telefone } = await req.json();
+    const { amount, customerName, customerCpf, produtos, telefone } = await req.json();
     const cpfLimpo = customerCpf.replace(/\D/g, "");
     const telefoneLimpo = telefone.replace(/\D/g, "");
     console.log('Iniciando verificacao do cliente');
