@@ -72,7 +72,7 @@ export default function PaymentForm() {
               onClick={handleCompra}
               className="w-full bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 h-[52px] shadow"
             >
-              Adiquirir bolão agora!
+              Adquira seu bolão agora!
             </button>
           </div>
         </CardContent>
