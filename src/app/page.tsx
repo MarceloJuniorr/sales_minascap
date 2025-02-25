@@ -38,14 +38,22 @@ export default function PaymentForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-red-800 p-4">
-      <Card className="w-full max-w-md bg-red-700 text-white p-4 relative">
+    <div className="flex items-center justify-center min-h-screen bg-red-800 p-0">
+      <Card className="w-full max-w-md bg-red-700 text-white p-0 relative">
         <CardContent>
           <div className="text-center text-lg font-semibold mb-4">
+          <div className="fixed top-0 left-0 right-0 h-[52px] bg-[#f8f8f8] flex items-center justify-center z-50">
+            <Image
+              src="https://app.minascap.com/assets/img/logo-topo.png"
+              alt="Logo Topo"
+              width={150} // ajuste conforme necessário
+              height={40} // ajuste conforme necessário
+            />
+          </div>
             {isLoading ? (
               <p>Carregando edição...</p>
             ) : edicao && edicao !== "N/A" && edicao !== "Erro ao carregar" ? (
-              <div className="relative w-full aspect-[9/16]">
+              <div className="relative w-full aspect-[9/16] mt-14">
                 <Image
                   src={`https://www.minascap.com/MINASCAP/_lib/file/img/${edicao}_BANNER_APP_1080x1920-compressed.jpg`}
                   alt="Banner Minas Cap"
@@ -62,7 +70,7 @@ export default function PaymentForm() {
           <div className="sticky bottom-0 pt-0 bg-red-700">
             <button
               onClick={handleCompra}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow"
+              className="w-full bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 h-[52px] shadow"
             >
               Adiquirir bolão agora!
             </button>

@@ -7,7 +7,7 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function CardContent({ children, className = "", ...props }: CardContentProps) {
   return (
-    <div className={`p-2 ${className}`} {...props}>
+    <div className={` ${className}`} {...props}>
       {children}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { CardContent } from "@/components/ui/CardContent";
@@ -122,9 +123,17 @@ export default function PaymentForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-red-800 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-red-700 p-0">
       <Card className="w-full max-w-md bg-red-700 text-white p-4">
         <CardContent>
+                    <div className="fixed top-0 left-0 right-0 h-[52px] bg-[#f8f8f8] flex items-center justify-center z-50">
+                      <Image
+                        src="https://app.minascap.com/assets/img/logo-topo.png"
+                        alt="Logo Topo"
+                        width={150} // ajuste conforme necessário
+                        height={40} // ajuste conforme necessário
+                      />
+                    </div>
           <h2 className="text-xl font-bold mb-4 text-center">MINAS CAP | Edição: {edicao}</h2>
 
           <div className="text-center text-lg font-semibold mb-4">
