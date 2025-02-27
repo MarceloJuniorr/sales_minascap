@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       edition: edicaoData[0].edition,
       sorteio: edicaoData[0].sorteio,
+      activeSale: edicaoData[0].activeSale,
       produtos,
     });
   } catch (error) {
