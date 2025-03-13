@@ -21,9 +21,12 @@ export async function GET() {
             const edicaoData: { 
               value: number; 
               groupLimit: number; 
-              cardboardLimit: number}[] = await response.json();
+              cardboardLimit: number;
+              activeSale: boolean}[] = await response.json();
             
-            
+            if (edicaoData[0].activeSale === false) {
+              return
+            }
             return {
               id: item.id,
               nome: item.nome,
