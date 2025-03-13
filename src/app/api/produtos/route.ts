@@ -24,16 +24,16 @@ export async function GET() {
               cardboardLimit: number;
               activeSale: boolean}[] = await response.json();
             
-            if (edicaoData[0].activeSale === false) {
-              return
+            if (edicaoData[0].activeSale === true) {
+              
+              return {
+                id: item.id,
+                nome: item.nome,
+                preco: edicaoData[0].value,
+                groupLimit: edicaoData[0].groupLimit,
+                cardboardLimit: edicaoData[0].cardboardLimit
+              };
             }
-            return {
-              id: item.id,
-              nome: item.nome,
-              preco: edicaoData[0].value,
-              groupLimit: edicaoData[0].groupLimit,
-              cardboardLimit: edicaoData[0].cardboardLimit
-            };
           } catch (error) {
             console.error(`Erro ao buscar edição para o produto ${item.nome}:`, error);
             return { ...item, preco: "Erro" };
