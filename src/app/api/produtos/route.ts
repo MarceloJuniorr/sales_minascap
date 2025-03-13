@@ -13,33 +13,38 @@ export async function GET() {
     });
 
     // Buscar valores atualizados para cada produto
-    const produtosComValores = await Promise.all(
-        produtos.map(async (item: { nome: string; urlIntegracao: string; id: number}) => {
+    const produtosComValores = (
+      await Promise.all(
+        produtos.map(async (item: { nome: string; urlIntegracao: string; id: number }) => {
           try {
             const response = await fetch(item.urlIntegracao + '/api/editions/active');
-            
             const edicaoData: { 
               value: number; 
               groupLimit: number; 
               cardboardLimit: number;
-              activeSale: boolean}[] = await response.json();
-            
-            if (edicaoData[0].activeSale === true) {
-              
-              return {
-                id: item.id,
-                nome: item.nome,
-                preco: edicaoData[0].value,
-                groupLimit: edicaoData[0].groupLimit,
-                cardboardLimit: edicaoData[0].cardboardLimit
-              };
+              activeSale: boolean
+            }[] = await response.json();
+
+            // Se não houver dados válidos, retorna null para ser filtrado depois
+            if (!edicaoData.length || !edicaoData[0].activeSale) {
+              return null;
             }
+
+            return {
+              id: item.id,
+              nome: item.nome,
+              preco: edicaoData[0].value,
+              groupLimit: edicaoData[0].groupLimit,
+              cardboardLimit: edicaoData[0].cardboardLimit,
+              activeSale: edicaoData[0].activeSale,
+            };
           } catch (error) {
             console.error(`Erro ao buscar edição para o produto ${item.nome}:`, error);
-            return { ...item, preco: "Erro" };
+            return null; // Retorna null para ser filtrado depois
           }
         })
-      );
+      )
+    ).filter((produto) => produto !== null); // Filtra os produtos inválidos
 
     return NextResponse.json(produtosComValores);
   } catch (error) {
