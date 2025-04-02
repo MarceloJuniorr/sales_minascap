@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "@/lib/pagamento"; // Isso inicia a rotina automaticamente
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

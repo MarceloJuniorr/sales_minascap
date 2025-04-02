@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
+    console.log('Webhook recebido' + req);
+    
     const notification = await req.json();
     const txid = notification.pix[0]?.txid;
 

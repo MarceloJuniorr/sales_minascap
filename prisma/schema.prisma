@@ -62,6 +62,7 @@ model Cobranca {
   txid         String   @unique
   status       Int      @default(0) // 0 = Pendente, 1 = Confirmado, 2 = Erro
   createdAt    DateTime @default(now())
+  countRetry   Int      @default(0)
 }
 
 model Integracao {
