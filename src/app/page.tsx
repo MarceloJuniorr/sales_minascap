@@ -55,8 +55,8 @@ export default function PaymentForm() {
             ) : edicao && edicao !== "N/A" && edicao !== "Erro ao carregar" ? (
               <div className="relative w-full aspect-[9/16] mt-14">
                 <Image
-                  src={`https://www.minascap.com/MINASCAP/_lib/file/img/${edicao}_BANNER_APP_1080x1920-compressed.jpg`}
-                  //src={`https://www.minascap.com/MINASCAP/_lib/file/img/XXX_BANNER_APP_1080x1920-compressed(2).jpg`}
+                  //src={`https://www.minascap.com/MINASCAP/_lib/file/img/${edicao}_BANNER_APP_1080x1920-compressed.jpg`}
+                  src={`https://www.minascap.com/MINASCAP/_lib/file/img/XXX_BANNER_APP_1080x1920-compressed(4).jpg`}
                   alt="Banner Minas Cap"
                   layout="fill"
                   objectFit="cover"
