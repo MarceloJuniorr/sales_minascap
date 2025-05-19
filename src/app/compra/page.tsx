@@ -98,7 +98,7 @@ export default function PaymentForm() {
       const dataPix = JSON.stringify({
         amount: totalAmount,
         telefone: formData.phone,
-        customerName: formData.name + " " + formData.surname,
+        customerName: formData.name + " " + formData.surname + " - " + formData.cpf.replace(/\D/g, ""),
         customerCpf: formData.cpf.replace(/\D/g, ""),
         produtos: Object.entries(formData.produtosSelecionados)
           .filter(([, qtd]) => qtd > 0)
@@ -224,9 +224,11 @@ export default function PaymentForm() {
                     <span className="block font-bold text-lg">
                       {produto.nome} | R$ {produto.preco}
                     </span>
-                    <span className="text-sm">
-                      {produto.cardboardLimit} Cartelas e {produto.groupLimit} Pessoas
-                    </span>
+                    {produto.cardboardLimit > 1 && (
+                      <span className="text-sm">
+                        {produto.cardboardLimit} Cartelas e {produto.groupLimit} Pessoas
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center">
                     <Button
