@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       produtoId: item.produto.id,
       urlIntegracao: item.produto.urlIntegracao,
       amount: item.quantidade,
-      name: cliente.nome,
+      name: cliente.nome + ' - ' + cliente.cpf,
       phone: cliente.telefone,
       promoterid: process.env.NEXT_PUBLIC_PROMOTER_ID!, // Definir via variável de ambiente
       status: 0, // 0 = Pendente, até que a venda seja registrada

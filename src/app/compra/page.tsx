@@ -98,7 +98,7 @@ export default function PaymentForm() {
       const dataPix = JSON.stringify({
         amount: totalAmount,
         telefone: formData.phone,
-        customerName: formData.name + " " + formData.surname + " - " + formData.cpf.replace(/\D/g, ""),
+        customerName: formData.name + " " + formData.surname,
         customerCpf: formData.cpf.replace(/\D/g, ""),
         produtos: Object.entries(formData.produtosSelecionados)
           .filter(([, qtd]) => qtd > 0)
