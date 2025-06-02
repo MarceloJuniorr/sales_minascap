@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     // 5️⃣ Gerar QR Code
     const qrcode = await efipay.pixGenerateQRCode({ id: loc.id });
     console.log(qrcode);
-    
+
 
     // 6️⃣ Salvar cobrança no banco
     await prisma.cobranca.create({

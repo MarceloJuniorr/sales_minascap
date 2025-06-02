@@ -42,21 +42,21 @@ export default function PaymentForm() {
       <Card className="w-full max-w-md bg-red-700 text-white p-0 relative">
         <CardContent>
           <div className="text-center text-lg font-semibold mb-4">
-          <div className="fixed top-0 left-0 right-0 h-[52px] bg-[#f8f8f8] flex items-center justify-center z-50">
-            <Image
-              src="https://app.minascap.com/assets/img/logo-topo.png"
-              alt="Logo Topo"
-              width={150} // ajuste conforme necessário
-              height={40} // ajuste conforme necessário
-            />
-          </div>
+            <div className="fixed top-0 left-0 right-0 h-[52px] bg-[#f8f8f8] flex items-center justify-center z-50">
+              <Image
+                src="https://app.minascap.com/assets/img/logo-topo.png"
+                alt="Logo Topo"
+                width={150} // ajuste conforme necessário
+                height={40} // ajuste conforme necessário
+              />
+            </div>
             {isLoading ? (
               <p>Carregando edição...</p>
             ) : edicao && edicao !== "N/A" && edicao !== "Erro ao carregar" ? (
               <div className="relative w-full aspect-[9/16] mt-14">
                 <Image
                   //src={`https://www.minascap.com/MINASCAP/_lib/file/img/${edicao}_BANNER_APP_1080x1920-compressed.jpg`}
-                  src={`https://www.minascap.com/MINASCAP/_lib/file/img/XXX_BANNER_APP_1080x1920-compressed(4).jpg`}
+                  src={`https://www.minascap.com/MINASCAP/_lib/file/img/XXX_BANNER_APP_1080x1920-compressed%20(1)(3).jpg`}
                   alt="Banner Minas Cap"
                   layout="fill"
                   objectFit="cover"
